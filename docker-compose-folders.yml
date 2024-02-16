@@ -1,0 +1,64 @@
+version: '3.9'
+
+# Define a custom network for Nextcloud and its database
+networks:
+  nextcloud_network:
+    driver: bridge # Use the bridge network driver
+    ipam: # Configure the IP address management
+      config:
+        - subnet: 172.20.0.0/24 # Use the subnet 172.20.0.0/24 for the network
+          gateway: 172.20.0.1 # Use the gateway 172.20.0.1 for the network
+
+# Define the services for Nextcloud and its database
+services:
+  app: # The Nextcloud service
+    image: nextcloud:latest # Use the latest Nextcloud image from Docker Hub
+    container_name: nextcloud # Name the container as nextcloud
+    environment: # Set the environment variables for the container
+      - PUID=1005 # Set the user ID for the container
+      - PGID=100 # Set the group ID for the container
+      - MYSQL_HOST=nextcloud_db # Set the host name of the database service
+      - MYSQL_DATABASE=nextcloud_db # Set the name of the database
+      - MYSQL_USER=nextclouduser # Set the user name of the database
+      - MYSQL_PASSWORD="mysql-user-password" # Set the password of the database
+      - HTTPS_ENABLED=true # Enable HTTPS for the Nextcloud service
+      - SSL_CERT=/etc/ssl/certs/host/SSLcertificate.crt # Set the path of the SSL certificate file
+      - SSL_KEY=/etc/ssl/private/host/SSLprivatekey.key # Set the path of the SSL key file
+      - TZ=America/Chicago # Set the time zone for the container
+      - WAIT_HOSTS=nextcloud_db:3306 # Wait for the database service to be ready on port 3306
+      - WAIT_HOSTS_TIMEOUT=300 # Set the timeout for waiting in seconds
+      - WAIT_SLEEP_INTERVAL=30 # Set the interval for checking in seconds
+      - WAIT_HOST_CONNECT_TIMEOUT=5 # Set the timeout for connecting in seconds
+    volumes: # Mount the volumes for the container
+      - /share/Docker/nextcloud/config:/config # Mount the folder /share/Docker/nextcloud/config on the host to the folder /config in the container
+      - /share/Docker/nextcloud/data:/data # Mount the folder /share/Docker/nextcloud/data on the host to the folder /data in the container
+    restart: always # Restart the container always
+    ports: # Expose the ports for the container
+      - 4020:450 # Map the port 4020 on the host to the port 450 in the container
+    depends_on: # Specify the dependencies for the container
+      - db # Depend on the database service
+    networks: # Connect the container to the networks
+      - nextcloud_network # Connect to the nextcloud_network
+    volumes_from: # Mount the volumes from another service
+      - certificates # Mount the volumes from the certificates service
+
+  db: # The database service
+    image: mariadb:latest # Use the latest MariaDB image from Docker Hub
+    container_name: nextcloud_db # Name the container as nextcloud_db
+    environment: # Set the environment variables for the container
+      - MYSQL_ROOT_PASSWORD="mysql-root-password" # Set the root password of the database
+      - MYSQL_DATABASE=nextcloud_db # Set the name of the database
+      - MYSQL_USER=nextclouduser # Set the user name of the database
+      - MYSQL_PASSWORD="mysql-user-password" # Set the password of the database
+    volumes: # Mount the volumes for the container
+      - /share/Docker/nextcloud/db:/config # Mount the folder /share/Docker/nextcloud/db on the host to the folder /config in the container
+    restart: always # Restart the container always
+    networks: # Connect the container to the networks
+      - nextcloud_network # Connect to the nextcloud_network
+
+  certificates: # Added this service
+    image: alpine # Use the alpine image from Docker Hub
+    container_name: certificates # Name the container as certificates
+    volumes: # Mount the volumes for the container
+      - /share/CACHEDEV1_DATA/ssl:/etc/ssl/certs/host # Mount the folder /share/CACHEDEV1_DATA/ssl on the host to the folder /etc/ssl/certs/host in the container
+      - /share/CACHEDEV1_DATA/ssl:/etc/ssl/private/host # Mount the folder /share/CACHEDEV1_DATA/ssl on the host to the folder /etc/ssl/private/host in the container

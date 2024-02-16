@@ -15,10 +15,27 @@ Go to "Users" from the main screen QTS, select "Create User" and create a user c
 
 ![User Creation](.attachments/UserCreation.png)
 
+</br>
+
+## SSL Setup
+You need to aquire an SSL Certificate. You can use a free one from Let's Encrypt, but it is recommended to purchase one from myQNAPcloud or another reputable provider like GlobalSign or GoDaddy. You can get a Let's Encrypt cert right from the secuirty section in QNAP Control Panel.
+
+Open the QNAP Control Panel and navigate to security. If you have an SSL cert then go a head and import it. If not buy one or create a free one with Let's Encrypt directly from the security section as shown below
+
+![Setup SSL](.attachments/getssl.png)
+
+If you got one from Let's Encrypt or from MyQNAPCloud, you need to download a copy of it. Even If you purchased one outside of QNAP, you are going to need to put another copy of the cert in another folder on the QNAP. 
+
+![Downlaod SSL](.attachments/downssl.png)
+
+You are going to have to SSH into the QNAP again and creat a folder called 'ssl' like this `/share/CACHEDEV1_DATA/ssl` and move SSL cert and private key to the folder. It needs to be this path unless you want to change the path on the .yml files.
+
+
+
 </br></br></br></br>
 
 
-## Decision: do you want to use Folders for the docker appdata or would you like to use volumes? 
+## Decision: do you want to use folders for the docker appdata or would you like to use volumes? 
 </br></br>
 ## USE FOLDERS 
 if you need to access or modify your data from outside the container, or use the host’s file system features, but be aware of the potential performance and security issues.
@@ -28,8 +45,9 @@ Choose volumes if you need to back up or migrate your data easily, share your da
 
 </br></br></br></br>
 
-
-
+## FOR FOLDERS START HERE. 
+you need to use the `docker-compose-folders.yml`. 
+Skip this section if using volumes
 
 ## Folder Creation
 Create a new shared folder that we will keep all docker appdata in. Load up "File Station" and create a new share by clicking on the `+` next to the Data Volume.
@@ -42,10 +60,12 @@ Call the folder `Docker` and give full read/write access to this folder to the n
 
 Once the `Docker` folder is created, create another folder called `nextcloud` within the `Docker` folder.
 
-- We are using the docker-compose file to create volumes for us instead of folders
+## FOR VOLUMES START HERE.
+(if you are using folders, you just keep going)
+you need to use the `docker-compose-volumes.yml` if you skipped the folders section. 
 
 ## Get User IDs
-Now the UID/GID of the user `dockeruser` need to be figured out. Use your favourite method to ssh into the QNAP NAS and run the following command:
+Now the UID/GID of the user `dockeruser` needs to be figured out. Use your favourite method to ssh into the QNAP NAS and run the following command:
 
 ```console
 id <username>
@@ -60,11 +80,19 @@ uid=500(dockeruser) gid=100(everyone) groups=100(everyone)
 [~] #
 ```
 
-Note the UID and the GID and replace the ID's in the docker-compose.yml file (see comments in the docker-compose file).
+Note the UID and the GID and replace the ID's in whatever docker-compose file you are using. in the app service. see below
+
+`services:
+  app:
+    image: nextcloud:latest
+    container_name:
+    environment:
+      - PUID=1005 # <--- here
+      - PGID=100 # <--- and here`
 
 
 ## Container Creation
-Create a new container based on the docker-compose.yml file.
+Create a new application in Container Station using the docker-compose file of your choice.
 
 ![Container Creation](.attachments/ContainerCreation.png)
 
@@ -72,21 +100,35 @@ Open the `Container Station` and select `Applications` from the management menu.
 
 ![Create Container Application](.attachments/CreateContainerApplication.png)
 
-Download the docker-compose.yml from the repository and replace the passwords and the dockeruser id/group (see comments in the docker-compose file).
+Download the docker-compose file of your choice from the repository and replace the passwords and the dockeruser id/group. the `MYSQL_PASSWORD="mysql-user-password"` is in both the app service and the db service. the  `MYSQL_ROOT_PASSWORD="mysql-root-password"` is only in the db service.
 
-Choose a name for the Container and paste the content of the docker-compose.yml into the YAML section and click on the create button.
+Choose a name for the Container and paste the content of the docker-compose file into the YAML section and click on the create button.
+
+
+
+
+
+
+
+
+
+
 
 ## Setup Nextcloud 
-After the container is created, open the Nextcloud web interface on https://NAS-IP:9443/
+After the container is created, open the Nextcloud web interface on https://NAS-IP:4020/
 
 ![Nextcloud Settings](.attachments/NextcloudSettings.png)
 
 Fill in the credentials for the administrator account.
 
-Select MySQL/MariaDB as database and use the database credentials defined in the docker-compose.yml file.
+Select MySQL/MariaDB as database and use the database credentials you defined in the docker-compose file.
 (MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, container_name)
 
 Click `Install` to finish the Nextcloud setup.
+
+</br></br></br>
+
+## UPDATING THE NEXTCLOUD APP
 
 ## Update Container
 To keep everything up to date the containers need to be updated frequently.
@@ -128,19 +170,7 @@ Select `Add` and insert the command you wish to execute. For example, you can us
 Once you have inserted the command, click on the `Save` button to save it. Now, you can execute the command. 
 If you need to re-execute the command in the future, don't worry! The command is now saved and can be easily accessed. Simply navigate to the saved commands section and select the desired command. It will be executed again, allowing you to perform the necessary actions whenever required.
 
-
-## Migrate to Container Station 3
-Starting from Container Station 3, it is no longer possible to set resource limits directly within the docker-compose file. 
-As a result, it is important to remove all deploy sections from the docker-compose file to ensure that the containers start successfully.
-
-```yaml
-# remove this section 
-    deploy:
-      resources:
-        limits:
-          cpus: 1.20
-          memory: 4096M
-```
+## Resource limits
 Resource limits can be manually configured in the advanced settings. This allows you to define specific limits for CPU usage and memory allocation.
 
 ![Create Container Application](.attachments/ContainerStationResourceLimits.png)

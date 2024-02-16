@@ -13,7 +13,7 @@ Go to "Users" from the main screen QTS, select "Create User" and create a user c
 ![User Creation](.attachments/UserCreation.png)
 
 
-## Folder Creation
+<s>## Folder Creation
 Create a new shared folder that we will keep all docker appdata in. Load up "File Station" and create a new share by clicking on the `+` next to the Data Volume.
 
 ![Folder Creation](.attachments/FolderCreation.png)
@@ -23,7 +23,8 @@ Call the folder `Docker` and give full read/write access to this folder to the n
 ![Folder Privileges](.attachments/FolderPrivileges.png)
 
 Once the `Docker` folder is created, create another folder called `nextcloud` within the `Docker` folder.
-
+</s>
+- We are using the docker-compose file to create volumes for us instead of folders
 
 ## Get User IDs
 Now the UID/GID of the user `dockeruser` need to be figured out. Use your favourite method to ssh into the QNAP NAS and run the following command:

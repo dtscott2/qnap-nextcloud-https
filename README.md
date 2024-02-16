@@ -6,7 +6,8 @@
 - Container Station Installed & Updated.
 - Understand how to access your QNAP via SSH.[Access my QNAP NAS using SSH](https://www.qnap.com/en/how-to/knowledge-base/article/how-do-i-access-my-qnap-nas-using-ssh)
 - Two open ports on your firewall/router. One for the nextcloud container, and one for the reverse proxy
-- an SSL certificate
+- an SSL Certificate
+- A Custom Domain Name
 </br>
 
 ## User Creation

@@ -5,7 +5,9 @@
 - Latest QNAP Firmware Installed.
 - Container Station Installed & Updated.
 - Understand how to access your QNAP via SSH.[Access my QNAP NAS using SSH](https://www.qnap.com/en/how-to/knowledge-base/article/how-do-i-access-my-qnap-nas-using-ssh)
-- Two open ports on your firewall/router
+- Two open ports on your firewall/router. One for the nextcloud container, and one for the reverse proxy
+- an SSL certificate
+</br>
 
 ## User Creation
 Create a new user which will be used for docker containers, so that they are not running as root (primarily for security reasons). 

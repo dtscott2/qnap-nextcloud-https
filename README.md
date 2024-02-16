@@ -4,7 +4,8 @@
 
 - Latest QNAP Firmware Installed.
 - Container Station Installed & Updated.
-- Understand how to access your QNAP via SSH.  [Access my QNAP NAS using SSH](https://www.qnap.com/en/how-to/knowledge-base/article/how-do-i-access-my-qnap-nas-using-ssh)
+- Understand how to access your QNAP via SSH.[Access my QNAP NAS using SSH](https://www.qnap.com/en/how-to/knowledge-base/article/how-do-i-access-my-qnap-nas-using-ssh)
+- Two open ports on your firewall/router
 
 ## User Creation
 Create a new user which will be used for docker containers, so that they are not running as root (primarily for security reasons). 
@@ -13,7 +14,23 @@ Go to "Users" from the main screen QTS, select "Create User" and create a user c
 ![User Creation](.attachments/UserCreation.png)
 
 
-<s>## Folder Creation
+
+
+
+decision time: do you want to use Folders for the docker app data or would you like to use volumes? 
+
+## USE FOLDERS 
+if you need to access or modify your data from outside the container, or use the host’s file system features, but be aware of the potential performance and security issues.
+
+## USE VOLUMES
+Choose volumes if you need to back up or migrate your data easily, share your data among multiple containers, or use volume drivers to add more functionality, but be aware of the difficulty of accessing or modifying your data from outside the container.
+
+
+
+
+
+
+## Folder Creation
 Create a new shared folder that we will keep all docker appdata in. Load up "File Station" and create a new share by clicking on the `+` next to the Data Volume.
 
 ![Folder Creation](.attachments/FolderCreation.png)
@@ -23,7 +40,7 @@ Call the folder `Docker` and give full read/write access to this folder to the n
 ![Folder Privileges](.attachments/FolderPrivileges.png)
 
 Once the `Docker` folder is created, create another folder called `nextcloud` within the `Docker` folder.
-</s>
+
 - We are using the docker-compose file to create volumes for us instead of folders
 
 ## Get User IDs

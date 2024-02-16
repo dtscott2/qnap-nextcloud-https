@@ -1,45 +1,64 @@
-version: "3.7"
+version: '3.9'
 
+# Define a custom network for Nextcloud and its database
+networks:
+  nextcloud_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+
+# Define the services for Nextcloud and its database
 services:
-  nextcloud:
-    image: linuxserver/nextcloud:latest
+  app: # The Nextcloud service
+    image: nextcloud:latest
     container_name: nextcloud
-    networks:
-      - nextcloudnet
     environment:
-      - PUID=1002   # dockeruser id
-      - PGID=100    # dockeruser group
-      - TZ=Europe/Zurich
+      - PUID=1005
+      - PGID=100
+      - MYSQL_HOST=nextcloud_db
+      - MYSQL_DATABASE=nextcloud_db
+      - MYSQL_USER=nextclouduser
+      - MYSQL_PASSWORD="mysql-user-password"
+      - HTTPS_ENABLED=true
+      - SSL_CERT=/etc/ssl/certs/host/SSLcertificate.crt
+      - SSL_KEY=/etc/ssl/private/host/SSLprivatekey.key
+      - TZ=America/Chicago
+      - WAIT_HOSTS=nextcloud_db:3306
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=30
+      - WAIT_HOST_CONNECT_TIMEOUT=5
     volumes:
-      - /share/Docker/nextcloud/config:/config
+      - /share/Docker/nextcloud/config:/config 
       - /share/Docker/nextcloud/data:/data
+    restart: always
     ports:
-      - 9443:443
-    restart: unless-stopped
+      - 4020:450 
     depends_on:
       - db
-
-  db:
-    image: linuxserver/mariadb:latest
-    container_name: nextcloud_db
     networks:
-      - nextcloudnet
-    environment:
-      - PUID=1002
-      - PGID=100
-      - MYSQL_ROOT_PASSWORD=db_root-password # replace with own password
-      - TZ=Europe/Zurich
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextclouduser
-      - MYSQL_PASSWORD=db_user_password # replace with own password
-    volumes:
-      - /share/Docker/nextcloud/config_db:/config
-    restart: unless-stopped
+      - nextcloud_network
+    volumes_from: 
+      - certificates 
 
-networks:
-    nextcloudnet:
-        driver: bridge    
-        ipam:
-          config:
-            - subnet: 10.0.8.0/24
-              gateway: 10.0.8.1 
+  db: # The database service
+    image: mariadb:latest 
+    container_name: nextcloud_db
+    environment:
+      - MYSQL_ROOT_PASSWORD="mysql-root-password"
+      - MYSQL_DATABASE=nextcloud_db
+      - MYSQL_USER=nextclouduser
+      - MYSQL_PASSWORD="mysql-user-password"
+    volumes:
+      - /share/Docker/nextcloud/db:/config
+    restart: always
+    networks:
+      - nextcloud_network
+
+  certificates: # Added this service
+    image: alpine
+    container_name: certificates
+    volumes:
+      - /share/CACHEDEV1_DATA/ssl:/etc/ssl/certs/host 
+      - /share/CACHEDEV1_DATA/ssl:/etc/ssl/private/host 

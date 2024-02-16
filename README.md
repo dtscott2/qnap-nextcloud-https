@@ -13,19 +13,18 @@ Go to "Users" from the main screen QTS, select "Create User" and create a user c
 
 ![User Creation](.attachments/UserCreation.png)
 
+</br></br></br></br>
 
 
-
-
-decision time: do you want to use Folders for the docker app data or would you like to use volumes? 
-
+## Decision: do you want to use Folders for the docker appdata or would you like to use volumes? 
+</br></br>
 ## USE FOLDERS 
 if you need to access or modify your data from outside the container, or use the host’s file system features, but be aware of the potential performance and security issues.
 
 ## USE VOLUMES
 Choose volumes if you need to back up or migrate your data easily, share your data among multiple containers, or use volume drivers to add more functionality, but be aware of the difficulty of accessing or modifying your data from outside the container.
 
-
+</br></br></br></br>
 
 
 

@@ -59,12 +59,12 @@ You are going to have to SSH into the QNAP again and creat a folder called 'ssl'
 A reverse proxy is a type of proxy server that retrieves resources on behalf of a client from one or more servers. This can improve the security and performance of your connection to your QNAP NAS and its web services. To set up a reverse proxy for your nextcloud container, you can follow these steps:
 
 - Go to Control Panel > Network & File Services > Network Access. Click the Reverse Proxy tab. Click Add. The Add Reverse Proxy Rule window appears.
-- Configure the Reverse Proxy Settings. Protocol: Select HTTPS. Domain: Use your custom domain or make one with myQNAPCloud. Port number: Use 4020 or any other port that is not used by another service on your QNAP NAS.
+- Configure the Reverse Proxy Settings. Protocol: Select HTTPS. Domain: Use your custom domain or make one with myQNAPCloud. Port number: Use 5000 or any other port that is not used by another service on your QNAP NAS.
 - Configure the Destination settings. Protocol: Select HTTP. IP address: Use the IP address of your QNAP NAS. Port number: Use the port number of your nextcloud container (for example: 450).
 - Configure the advanced settings if needed. For example, you can enable SSL offloading, which means that the reverse proxy will handle the SSL encryption and decryption, reducing the load on your nextcloud container. You can also specify the proxy connection timeout, the HTTP headers to pass or remove, and the custom error pages.
 - Click Apply. The reverse proxy rule is created and enabled.
-- Log in to your router’s control panel and configure port forwarding for the port number you used in the Reverse Proxy Settings (for example: 4020). You need to forward this port to the IP address and port number of your QNAP NAS 
-- You can now use your myQNAPcloud DDNS domain name and the port number you used in the Reverse Proxy Settings to access your nextcloud container with HTTPS (for example: https://mynas.myqnapcloud.com:4020).
+- Log in to your router’s control panel and configure port forwarding for the port number you used in the Reverse Proxy Settings (for example: 5000). You need to forward this port to the IP address and port number of your QNAP NAS 
+- You can now use your myQNAPcloud DDNS domain name and the port number you used in the Reverse Proxy Settings to access your nextcloud container with HTTPS (for example: https://mynas.myqnapcloud.com:5000).
 
 </br></br></br></br>
 
@@ -149,7 +149,7 @@ Choose a name for the Container and paste the content of the docker-compose file
 
 
 ## Setup Nextcloud 
-After the container is created, open the Nextcloud web interface on https://NAS-IP:4020/
+After the container is created, open the Nextcloud web interface on https://NAS-IP:5000/
 
 ![Nextcloud Settings](.attachments/NextcloudSettings.png)
 

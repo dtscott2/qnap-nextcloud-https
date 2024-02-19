@@ -1,5 +1,28 @@
-# qnap-nextcloud
+# Nextcloud on QNAP NAS using Container Station
 
+Nextcloud is a self-hosted cloud platform that allows you to store, sync, and share your files, contacts, calendars, notes, and more. You can access your data from any device, and extend its functionality with hundreds of apps. Nextcloud is an open source alternative to popular cloud services such as Dropbox, Google Drive, and iCloud.
+
+In this guide, you will learn how to install and configure Nextcloud on your QNAP NAS using Container Station, a QNAP app that allows you to run Docker containers and manage them with a graphical interface. You will also learn how to set up a reverse proxy, SSL, and backup for your Nextcloud instance.
+</br>
+## Table of Contents
+
+- [Requirements](#requirements)
+- [User Creation](#user-creation)
+- [SSL Setup](#ssl-setup)
+- [Reverse Proxy Setup](#reverse-proxy-setup)
+- [Decision: Folders or Volumes](#decision-folders-or-volumes)
+- [Folder Creation](#folder-creation)
+- [Get User IDs](#get-user-ids)
+- [Container Creation](#container-creation)
+- [Setup Nextcloud](#setup-nextcloud)
+- [Access Nextcloud](#access-nextcloud)
+- [Backup and Restore](#backup-and-restore)
+- [Update Container](#update-container)
+- [Update Nextcloud](#update-nextcloud)
+- [Nextcloud Maintenance](#nextcloud-maintenance)
+- [Troubleshooting](#troubleshooting)
+
+</br>
 ## Requirements
 
 - Latest QNAP Firmware Installed.
@@ -9,7 +32,7 @@
 - an SSL Certificate
 - A Custom Domain Name
 </br>
-
+</br>
 ## User Creation
 Create a new user which will be used for docker containers, so that they are not running as root (primarily for security reasons). 
 Go to "Users" from the main screen QTS, select "Create User" and create a user called "dockeruser"
@@ -17,7 +40,7 @@ Go to "Users" from the main screen QTS, select "Create User" and create a user c
 ![User Creation](.attachments/UserCreation.png)
 
 </br>
-
+</br>
 ## SSL Setup
 You need to aquire an SSL Certificate. You can use a free one from Let's Encrypt, but it is recommended to purchase one from myQNAPcloud or another reputable provider like GlobalSign or GoDaddy. You can get a Let's Encrypt cert right from the secuirty section in QNAP Control Panel.
 
@@ -30,8 +53,18 @@ If you got one from Let's Encrypt or from MyQNAPCloud, you need to download a co
 ![Downlaod SSL](.attachments/downssl.png)
 
 You are going to have to SSH into the QNAP again and creat a folder called 'ssl' like this `/share/CACHEDEV1_DATA/ssl` and move SSL cert and private key to the folder. It needs to be this path unless you want to change the path on the .yml files.
+</br>
+## Reverse Proxy Setup
 
+A reverse proxy is a type of proxy server that retrieves resources on behalf of a client from one or more servers. This can improve the security and performance of your connection to your QNAP NAS and its web services. To set up a reverse proxy for your nextcloud container, you can follow these steps:
 
+- Go to Control Panel > Network & File Services > Network Access. Click the Reverse Proxy tab. Click Add. The Add Reverse Proxy Rule window appears.
+- Configure the Reverse Proxy Settings. Protocol: Select HTTPS. Domain: Use your custom domain or make one with myQNAPCloud. Port number: Use 4020 or any other port that is not used by another service on your QNAP NAS.
+- Configure the Destination settings. Protocol: Select HTTP. IP address: Use the IP address of your QNAP NAS. Port number: Use the port number of your nextcloud container (for example: 450).
+- Configure the advanced settings if needed. For example, you can enable SSL offloading, which means that the reverse proxy will handle the SSL encryption and decryption, reducing the load on your nextcloud container. You can also specify the proxy connection timeout, the HTTP headers to pass or remove, and the custom error pages.
+- Click Apply. The reverse proxy rule is created and enabled.
+- Log in to your router’s control panel and configure port forwarding for the port number you used in the Reverse Proxy Settings (for example: 4020). You need to forward this port to the IP address and port number of your QNAP NAS 
+- You can now use your myQNAPcloud DDNS domain name and the port number you used in the Reverse Proxy Settings to access your nextcloud container with HTTPS (for example: https://mynas.myqnapcloud.com:4020).
 
 </br></br></br></br>
 

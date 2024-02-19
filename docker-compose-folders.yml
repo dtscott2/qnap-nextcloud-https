@@ -34,7 +34,7 @@ services:
       - /share/Docker/nextcloud/data:/data # Mount the folder /share/Docker/nextcloud/data on the host to the folder /data in the container
     restart: always # Restart the container always
     ports: # Expose the ports for the container
-      - 4020:450 # Map the port 4020 on the host to the port 450 in the container
+      - 5000:450 # Map the port 4020 on the host to the port 450 in the container
     depends_on: # Specify the dependencies for the container
       - db # Depend on the database service
     networks: # Connect the container to the networks
